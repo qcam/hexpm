@@ -139,6 +139,18 @@ defmodule Hexpm.Repository.Package do
       where: fragment("?->'extra' @> ?", p.meta, ^extra))
   end
 
+  defp search_param("depends", search, query) do
+    dependant_ids = from(p in Package,
+                         join: rel in assoc(p, :releases),
+                         join: req in assoc(rel, :requirements),
+                         join: dep in assoc(req, :dependency),
+                         where: dep.name == ^search,
+                         distinct: p.id,
+                         select: p.id) |> Packages.ids
+
+    from(p in query, where: p.id in ^dependant_ids)
+  end
+
   defp search_param(_, _, query) do
     query
   end

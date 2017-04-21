@@ -71,4 +71,8 @@ defmodule Hexpm.Repository.Packages do
     |> Repo.all
     |> Enum.into(%{})
   end
+
+  def ids(query) do
+    Repo.all(query)
+  end
 end
